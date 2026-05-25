@@ -1,0 +1,55 @@
+---
+title: Banking operation state machine
+---
+stateDiagram-v2
+    direction TB
+
+    [*] --> Idle
+
+    Idle --> CreatingAccount : openAccount
+    CreatingAccount --> AccountReady : createAccount
+    AccountReady --> Complete : getAccount
+
+    Idle --> Processing : deposit / withdraw / transfer
+
+    state Processing {
+        [*] --> RecordingTransaction
+        RecordingTransaction --> PostingLedger : recordTransaction
+
+        state PostingLedger {
+            [*] --> SingleLedgerEntry
+            SingleLedgerEntry --> DualLedgerEntry : transfer
+            SingleLedgerEntry --> LedgerComplete : deposit or withdraw
+            DualLedgerEntry --> LedgerComplete : second recordLedgerEntry
+            LedgerComplete --> [*]
+        }
+
+        PostingLedger --> ReadingAccounts : ledger posted
+
+        state ReadingAccounts {
+            [*] --> ReadOneAccount
+            ReadOneAccount --> ReadTwoAccounts : transfer
+            ReadOneAccount --> ReadComplete : deposit or withdraw
+            ReadTwoAccounts --> ReadComplete : second getAccount
+            ReadComplete --> [*]
+        }
+
+        ReadingAccounts --> [*]
+    }
+
+    Processing --> Complete
+    Complete --> Idle
+    Complete --> [*]
+
+    note right of Processing
+        CommandModel writes then
+        QueryModel reads result
+    end note
+
+    classDef idle fill:#eee,color:#000
+    classDef command fill:#438DD5,color:#fff
+    classDef complete fill:#08427B,color:#fff
+
+    class Idle idle
+    class CreatingAccount,Processing command
+    class Complete complete

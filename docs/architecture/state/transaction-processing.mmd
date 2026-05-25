@@ -1,0 +1,32 @@
+---
+title: Transaction processing lifecycle
+---
+stateDiagram-v2
+    direction TB
+
+    [*] --> Initiated
+    Initiated --> Recorded : recordTransaction
+    Recorded --> LedgerUpdated : recordLedgerEntry
+    LedgerUpdated --> LedgerUpdated : transfer second ledger entry
+    LedgerUpdated --> AccountRead : getAccount
+    AccountRead --> AccountRead : transfer second getAccount
+    AccountRead --> Completed
+    Completed --> [*]
+
+    note right of Recorded
+        TRANSACTION persisted
+        with transactionId and type
+    end note
+
+    note right of LedgerUpdated
+        LEDGER_ENTRY rows posted
+        to affected accounts
+    end note
+
+    classDef write fill:#438DD5,color:#fff
+    classDef read fill:#85BBF0,color:#000
+    classDef done fill:#08427B,color:#fff
+
+    class Initiated,Recorded,LedgerUpdated write
+    class AccountRead read
+    class Completed done

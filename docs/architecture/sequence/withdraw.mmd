@@ -1,0 +1,25 @@
+---
+title: Withdrawal sequence
+---
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant BankingService
+    participant CommandModel
+    participant QueryModel
+    participant Store@{ "type": "database" }
+
+    Customer->>+BankingService: withdraw(domain, fromAccountNumber, amount)
+    BankingService->>+CommandModel: recordTransaction(WITHDRAWAL, fromAccountNumber)
+    CommandModel->>+Store: persist transaction
+    Store-->>-CommandModel: transactionId
+    CommandModel-->>-BankingService: transactionId
+    BankingService->>+CommandModel: recordLedgerEntry(fromAccountNumber, amount, transactionId)
+    CommandModel->>+Store: persist ledger entry
+    Store-->>-CommandModel: ok
+    CommandModel-->>-BankingService: ok
+    BankingService->>+QueryModel: getAccount(fromAccountNumber)
+    QueryModel->>+Store: read account and ledger
+    Store-->>-QueryModel: AccountAggregate
+    QueryModel-->>-BankingService: AccountAggregate
+    BankingService-->>-Customer: fromAccount

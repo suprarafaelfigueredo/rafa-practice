@@ -1,0 +1,25 @@
+---
+title: Deposit sequence
+---
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant BankingService
+    participant CommandModel
+    participant QueryModel
+    participant Store@{ "type": "database" }
+
+    Customer->>+BankingService: deposit(domain, toAccountNumber, amount)
+    BankingService->>+CommandModel: recordTransaction(DEPOSIT, toAccountNumber)
+    CommandModel->>+Store: persist transaction
+    Store-->>-CommandModel: transactionId
+    CommandModel-->>-BankingService: transactionId
+    BankingService->>+CommandModel: recordLedgerEntry(toAccountNumber, amount, transactionId)
+    CommandModel->>+Store: persist ledger entry
+    Store-->>-CommandModel: ok
+    CommandModel-->>-BankingService: ok
+    BankingService->>+QueryModel: getAccount(toAccountNumber)
+    QueryModel->>+Store: read account and ledger
+    Store-->>-QueryModel: AccountAggregate
+    QueryModel-->>-BankingService: AccountAggregate
+    BankingService-->>-Customer: toAccount

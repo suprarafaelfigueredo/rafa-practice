@@ -1,0 +1,20 @@
+---
+title: Open account flow
+---
+flowchart TD
+    start(["Customer requests new account"])
+    create_account["CommandModel.createAccount()"]
+    get_account["QueryModel.getAccount(accountNumber)"]
+    finish(["Return newAccount"])
+
+    start --> create_account
+    create_account --> get_account
+    get_account --> finish
+
+    classDef event fill:#08427B,color:#fff,stroke:#052E56
+    classDef command fill:#438DD5,color:#fff,stroke:#2E6295
+    classDef query fill:#85BBF0,color:#000,stroke:#5A9BD5
+
+    class start,finish event
+    class create_account command
+    class get_account query

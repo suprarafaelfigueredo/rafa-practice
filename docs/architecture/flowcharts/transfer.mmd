@@ -1,0 +1,26 @@
+---
+title: Transfer flow
+---
+flowchart TD
+    start(["Customer transfers funds"])
+    record_tx["CommandModel.recordTransaction<br/>TRANSFER, fromAccountNumber, toAccountNumber"]
+    debit_ledger["CommandModel.recordLedgerEntry<br/>fromAccountNumber, -amount, transactionId"]
+    credit_ledger["CommandModel.recordLedgerEntry<br/>toAccountNumber, +amount, transactionId"]
+    get_from["QueryModel.getAccount(fromAccountNumber)"]
+    get_to["QueryModel.getAccount(toAccountNumber)"]
+    finish(["Return fromAccount and toAccount"])
+
+    start --> record_tx
+    record_tx --> debit_ledger
+    debit_ledger --> credit_ledger
+    credit_ledger --> get_from
+    get_from --> get_to
+    get_to --> finish
+
+    classDef event fill:#08427B,color:#fff,stroke:#052E56
+    classDef command fill:#438DD5,color:#fff,stroke:#2E6295
+    classDef query fill:#85BBF0,color:#000,stroke:#5A9BD5
+
+    class start,finish event
+    class record_tx,debit_ledger,credit_ledger command
+    class get_from,get_to query

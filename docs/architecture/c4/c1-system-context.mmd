@@ -1,0 +1,15 @@
+C4Context
+  title System Context diagram for Banking System
+
+  Person(customer, "Bank Customer", "Opens accounts and moves money through deposits, withdrawals, and transfers.")
+  Person(operator, "Bank Operator", "Uses banking operations on behalf of the institution or for support.")
+
+  System(banking, "Banking System", "Manages customer accounts, records monetary transactions, and maintains account ledgers.")
+
+  System_Ext(channel, "Customer Channel", "Web, mobile, or branch applications through which customers initiate banking actions.")
+  SystemDb_Ext(store, "Account and Ledger Store", "Persists accounts, transactions, and ledger entries.")
+
+  Rel(customer, channel, "Initiates banking actions through")
+  Rel(operator, banking, "Performs account and transaction operations via")
+  Rel(channel, banking, "Requests account operations from")
+  Rel(banking, store, "Records and retrieves account data via")

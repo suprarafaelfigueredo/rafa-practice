@@ -1,0 +1,46 @@
+---
+title: Transaction type states
+---
+stateDiagram-v2
+    direction LR
+
+    [*] --> OperationSelected
+
+    state OperationSelected <<choice>>
+    OperationSelected --> DepositFlow : deposit
+    OperationSelected --> WithdrawalFlow : withdraw
+    OperationSelected --> TransferFlow : transfer
+
+    state DepositFlow {
+        [*] --> DepositRecorded
+        DepositRecorded --> DepositLedgerPosted : credit toAccount
+        DepositLedgerPosted --> DepositComplete : getAccount toAccount
+        DepositComplete --> [*]
+    }
+
+    state WithdrawalFlow {
+        [*] --> WithdrawalRecorded
+        WithdrawalRecorded --> WithdrawalLedgerPosted : debit fromAccount
+        WithdrawalLedgerPosted --> WithdrawalComplete : getAccount fromAccount
+        WithdrawalComplete --> [*]
+    }
+
+    state TransferFlow {
+        [*] --> TransferRecorded
+        TransferRecorded --> TransferDebitPosted : debit fromAccount
+        TransferDebitPosted --> TransferCreditPosted : credit toAccount
+        TransferCreditPosted --> TransferAccountsRead : getAccount from and to
+        TransferAccountsRead --> [*]
+    }
+
+    DepositFlow --> [*]
+    WithdrawalFlow --> [*]
+    TransferFlow --> [*]
+
+    classDef deposit fill:#85BBF0,color:#000
+    classDef withdraw fill:#438DD5,color:#fff
+    classDef transfer fill:#1168BD,color:#fff
+
+    class DepositFlow deposit
+    class WithdrawalFlow withdraw
+    class TransferFlow transfer

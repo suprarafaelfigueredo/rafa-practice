@@ -1,0 +1,33 @@
+---
+title: Transfer sequence
+---
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant BankingService
+    participant CommandModel
+    participant QueryModel
+    participant Store@{ "type": "database" }
+
+    Customer->>+BankingService: transfer(domain, fromAccountNumber, toAccountNumber, amount)
+    BankingService->>+CommandModel: recordTransaction(TRANSFER, from, to)
+    CommandModel->>+Store: persist transaction
+    Store-->>-CommandModel: transactionId
+    CommandModel-->>-BankingService: transactionId
+    BankingService->>+CommandModel: recordLedgerEntry(fromAccountNumber, -amount, transactionId)
+    CommandModel->>+Store: persist debit ledger entry
+    Store-->>-CommandModel: ok
+    CommandModel-->>-BankingService: ok
+    BankingService->>+CommandModel: recordLedgerEntry(toAccountNumber, amount, transactionId)
+    CommandModel->>+Store: persist credit ledger entry
+    Store-->>-CommandModel: ok
+    CommandModel-->>-BankingService: ok
+    BankingService->>+QueryModel: getAccount(fromAccountNumber)
+    QueryModel->>+Store: read source account
+    Store-->>-QueryModel: fromAccount
+    QueryModel-->>-BankingService: fromAccount
+    BankingService->>+QueryModel: getAccount(toAccountNumber)
+    QueryModel->>+Store: read target account
+    Store-->>-QueryModel: toAccount
+    QueryModel-->>-BankingService: toAccount
+    BankingService-->>-Customer: fromAccount, toAccount

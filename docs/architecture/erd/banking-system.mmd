@@ -1,0 +1,30 @@
+---
+title: Banking System ERD
+---
+erDiagram
+    direction TB
+
+    ACCOUNT ||--o{ LEDGER_ENTRY : receives
+    TRANSACTION ||--|{ LEDGER_ENTRY : posts
+    ACCOUNT ||--o{ TRANSACTION : originates
+    ACCOUNT ||--o{ TRANSACTION : targets
+
+    ACCOUNT {
+        int accountNumber PK
+        datetime creationDateTime
+        decimal balance
+    }
+
+    TRANSACTION {
+        int transactionId PK
+        string transactionType "DEPOSIT, WITHDRAWAL, TRANSFER"
+        int fromAccountNumber FK "nullable"
+        int toAccountNumber FK "nullable"
+    }
+
+    LEDGER_ENTRY {
+        int accountNumber PK, FK
+        int transactionId PK, FK
+        datetime dateTime
+        decimal amount
+    }

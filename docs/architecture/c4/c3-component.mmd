@@ -1,0 +1,25 @@
+C4Component
+  title Component diagram for Banking Domain Library
+
+  Container_Ext(channel, "Customer Channel", "Web, mobile, or branch", "Invokes banking operations.")
+  ContainerDb_Ext(store, "Account and Ledger Store", "Database", "Persists accounts and ledger data.")
+
+  Container_Boundary(domain_lib, "Banking Domain Library") {
+    Component(banking_service, "Banking Domain Service", "TypeScript", "Orchestrates openAccount, deposit, withdraw, and transfer.")
+    Component(cqrs_ports, "CQRS Domain Facade", "TypeScript", "Bundles CommandModel and QueryModel as Domain.")
+    Component(command_port, "Command Port", "TypeScript", "createAccount, recordTransaction, recordLedgerEntry.")
+    Component(query_port, "Query Port", "TypeScript", "getAccount, getTransaction.")
+    Component(account_agg, "Account Aggregate", "TypeScript", "AccountEntity, LedgerEntry, AccountAggregate.")
+    Component(transaction_agg, "Transaction Aggregate", "TypeScript", "TransactionType, args, and entities.")
+  }
+
+  Rel(channel, banking_service, "Calls")
+  Rel(banking_service, cqrs_ports, "Uses")
+  Rel(banking_service, transaction_agg, "References types from")
+  Rel(cqrs_ports, command_port, "Composes")
+  Rel(cqrs_ports, query_port, "Composes")
+  Rel(command_port, transaction_agg, "Uses types from")
+  Rel(query_port, account_agg, "Returns")
+  Rel(query_port, transaction_agg, "Returns")
+  Rel(command_port, store, "Persists via adapter")
+  Rel(query_port, store, "Reads via adapter")

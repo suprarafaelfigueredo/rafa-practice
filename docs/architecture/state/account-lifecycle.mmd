@@ -1,0 +1,29 @@
+---
+title: Account lifecycle
+---
+stateDiagram-v2
+    direction LR
+
+    [*] --> NonExistent
+    NonExistent --> Created : openAccount / createAccount
+    Created --> Active : getAccount
+    Active --> Active : deposit
+    Active --> Active : withdraw
+    Active --> Active : transfer
+
+    note right of Created
+        Account exists with
+        accountNumber and
+        creationDateTime
+    end note
+
+    note right of Active
+        Balance updated via
+        ledger entries
+    end note
+
+    classDef created fill:#85BBF0,color:#000
+    classDef active fill:#1168BD,color:#fff
+
+    class Created created
+    class Active active

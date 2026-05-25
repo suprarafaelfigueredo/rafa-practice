@@ -1,0 +1,21 @@
+---
+title: Open account sequence
+---
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant BankingService
+    participant CommandModel
+    participant QueryModel
+    participant Store@{ "type": "database" }
+
+    Customer->>+BankingService: openAccount(domain)
+    BankingService->>+CommandModel: createAccount()
+    CommandModel->>+Store: persist new account
+    Store-->>-CommandModel: accountNumber
+    CommandModel-->>-BankingService: accountNumber
+    BankingService->>+QueryModel: getAccount(accountNumber)
+    QueryModel->>+Store: read account and ledger
+    Store-->>-QueryModel: AccountAggregate
+    QueryModel-->>-BankingService: AccountAggregate
+    BankingService-->>-Customer: newAccount

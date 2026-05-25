@@ -1,0 +1,19 @@
+C4Container
+  title Container diagram for Banking System
+
+  Person(customer, "Bank Customer", "Initiates deposits, withdrawals, transfers, and account opening.")
+  System_Ext(channel, "Customer Channel", "Web, mobile, or branch front-end. Future consumer of the domain library.")
+  SystemDb_Ext(store, "Account and Ledger Store", "Database or external core banking.")
+
+  Container_Boundary(banking_boundary, "Banking System") {
+    Container(domain_lib, "Banking Domain Library", "TypeScript Module", "Domain model, CQRS ports, and banking use cases.")
+    Container_Ext(cmd_adapter, "Command Side Adapter", "TypeScript Module", "Implements CommandModel. Not in repo.")
+    Container_Ext(qry_adapter, "Query Side Adapter", "TypeScript Module", "Implements QueryModel. Not in repo.")
+  }
+
+  Rel(customer, channel, "Uses")
+  Rel(channel, domain_lib, "Invokes banking operations via")
+  Rel(domain_lib, cmd_adapter, "Records changes through")
+  Rel(domain_lib, qry_adapter, "Reads state through")
+  Rel(cmd_adapter, store, "Writes accounts and ledger entries to")
+  Rel(qry_adapter, store, "Reads accounts and transactions from")

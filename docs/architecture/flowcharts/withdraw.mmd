@@ -1,0 +1,22 @@
+---
+title: Withdrawal flow
+---
+flowchart TD
+    start(["Customer withdraws cash"])
+    record_tx["CommandModel.recordTransaction<br/>WITHDRAWAL, fromAccountNumber"]
+    record_ledger["CommandModel.recordLedgerEntry<br/>fromAccountNumber, amount, transactionId"]
+    get_account["QueryModel.getAccount(fromAccountNumber)"]
+    finish(["Return fromAccount"])
+
+    start --> record_tx
+    record_tx --> record_ledger
+    record_ledger --> get_account
+    get_account --> finish
+
+    classDef event fill:#08427B,color:#fff,stroke:#052E56
+    classDef command fill:#438DD5,color:#fff,stroke:#2E6295
+    classDef query fill:#85BBF0,color:#000,stroke:#5A9BD5
+
+    class start,finish event
+    class record_tx,record_ledger command
+    class get_account query
